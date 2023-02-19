@@ -5,7 +5,8 @@ create table parking_lot
             primary key,
     motorcycle_spots bigint NOT NULL,
     car_spots bigint NOT NULL,
-    van_spots bigint NOT NULL
+    van_spots bigint NOT NULL,
+    current_spot bigint NOT NULL
 );
 
 create table vehicle
@@ -17,6 +18,6 @@ create table vehicle
         constraint vehicle_constraint
             references parking_lot,
     type int NOT NULL,
-    spot bigint NOT NULL,
-    parked boolean NOT NULL
+    spot int NOT NULL,
+    parked bigint NOT NULL
 );
