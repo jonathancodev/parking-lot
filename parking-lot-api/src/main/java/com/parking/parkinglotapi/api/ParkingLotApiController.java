@@ -61,4 +61,10 @@ public class ParkingLotApiController implements ParkingLotApi {
         ParkingLotDto parkingLotDto = parkingLotService.getParkedSpots();
         return new ResponseEntity<>(parkingLotDto, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<String> isParkedLotFull() {
+        String answer = parkingLotService.isParkedLotFull() ? "Yes" : "No";
+        return new ResponseEntity<>(answer, HttpStatus.OK);
+    }
 }

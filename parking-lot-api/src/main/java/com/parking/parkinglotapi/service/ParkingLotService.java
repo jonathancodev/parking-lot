@@ -133,6 +133,10 @@ public class ParkingLotService {
         return parkingLotDto;
     }
 
+    public boolean isParkedLotFull() {
+        return parkingLot.isParkedLotFull();
+    }
+
     public List<ParkingSlotDto> getParkingSlotsFilled() {
         return parkingLot.slotsFilled().stream()
                 .map(ps -> new ParkingSlotDto(ps.getNumber(), ps.getSpotType(), new VehicleDto(ps.getVehicle())))

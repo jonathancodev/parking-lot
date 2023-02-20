@@ -133,4 +133,12 @@ public class ParkingLot {
 
         return 0L;
     }
+
+    public boolean isParkedLotFull() {
+        long count = slots.stream()
+                .filter(ps -> ps.getVehicle() != null)
+                .count();
+
+        return count == (motorcycleSpots + carSpots + vanSpots);
+    }
 }

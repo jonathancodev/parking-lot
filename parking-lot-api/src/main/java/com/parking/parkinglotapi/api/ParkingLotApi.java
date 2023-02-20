@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,4 +80,16 @@ public interface ParkingLotApi {
             @ApiResponse(responseCode = "503", description = "Service unavailable, try again later")})
     @RequestMapping(value = "/dashboard/parked-spots", produces = {"application/json"}, method = RequestMethod.GET)
     ResponseEntity<ParkingLotDto> getParkedSpots();
+
+    @Operation(summary = "Is parked lot full?", description = "is parked lot full?", tags = {"Parking Lot Dashboard"})
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "successful operation", content = @Content(mediaType = MediaType.TEXT_PLAIN_VALUE)),
+            @ApiResponse(responseCode = "400", description = "Bad request, please review the params"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized, you need pass a token to use this service"),
+            @ApiResponse(responseCode = "403", description = "Forbidden, you do not have permission to use this service"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error, contact the admin"),
+            @ApiResponse(responseCode = "503", description = "Service unavailable, try again later")})
+    @RequestMapping(value = "/dashboard/is-parked-lot-full", produces = {MediaType.TEXT_PLAIN_VALUE}, method = RequestMethod.GET)
+    ResponseEntity<String> isParkedLotFull();
 }
