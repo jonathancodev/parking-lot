@@ -1,35 +1,25 @@
 package com.parking.parkinglotapi.model;
 
 import com.parking.parkinglotapi.enums.VehicleType;
-import com.parking.parkinglotapi.exceptions.BadRequestException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Van extends Vehicle {
 
     @Override
-    public void park(ParkingLot parkingLot) throws BadRequestException {
-        if (parkingLot.getVanSpots() > 0) {
-            setSpot(VehicleType.VAN);
-            setParked(parkingLot.getCurrentSpot());
-            parkingLot.setVanSpots(parkingLot.getVanSpots() - 1L);
-            parkingLot.setCurrentSpot(parkingLot.getCurrentSpot() + 1L);
-        } else if (parkingLot.getCarSpots() >= 3) {
-            setSpot(VehicleType.CAR);
-            setParked(parkingLot.getCurrentSpot());
-            parkingLot.setCarSpots(parkingLot.getCarSpots() - 3L);
-            parkingLot.setCurrentSpot(parkingLot.getCurrentSpot() + 3L);
-        } else {
-            throw new BadRequestException("Parking lot is full");
-        }
-    }
+    public ParkingSlot park(ParkingLot parkingLot) {
+        ParkingSlot parkingSlot = parkingLot.getSlotAvailable(VehicleType.VAN);
 
-    @Override
-    public void remove(ParkingLot parkingLot) {
-        if (getSpot() == VehicleType.VAN) {
-            parkingLot.setVanSpots(parkingLot.getVanSpots() + 1L);
-        } else if (getSpot() == VehicleType.CAR) {
-            parkingLot.setCarSpots(parkingLot.getCarSpots() + 3L);
+        if (parkingSlot == null) {
+            parkingSlot = parkingLot.getSlots()
+                    .stream()
+                    .filter(ps -> ps.getSpotType() == VehicleType.CAR && ps.getVehicle() == null &&
+                            (ps.getNumber() > 1 && parkingLot.getSlots().get(ps.getNumber() - 2).getVehicle() == null) &&
+                            (ps.getNumber() < parkingLot.getSlots().size() && parkingLot.getSlots().get(ps.getNumber()).getVehicle() == null))
+                    .findFirst()
+                    .orElse(null);
         }
 
-        parkingLot.setCurrentSpot(getParked());
+        return parkingSlot;
     }
 }

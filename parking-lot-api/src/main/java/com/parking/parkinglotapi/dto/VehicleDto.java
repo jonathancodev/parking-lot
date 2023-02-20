@@ -14,11 +14,5 @@ public class VehicleDto {
 
     private Long id;
 
-    private ParkingLotDto parkingLotDto;
-
     private VehicleType vehicleType;
-
-    private VehicleType spot;
-
-    private Long parked;
 }

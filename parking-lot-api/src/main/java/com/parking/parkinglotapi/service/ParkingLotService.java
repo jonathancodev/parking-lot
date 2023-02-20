@@ -4,7 +4,6 @@ import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
 import com.parking.parkinglotapi.exceptions.BadRequestException;
 import com.parking.parkinglotapi.factory.VehicleFactory;
-import com.parking.parkinglotapi.model.Motorcycle;
 import com.parking.parkinglotapi.model.ParkingLot;
 import com.parking.parkinglotapi.model.ParkingSlot;
 import com.parking.parkinglotapi.model.Vehicle;
@@ -19,14 +18,14 @@ import java.util.Locale;
 import java.util.Objects;
 
 @Service
-public class VehicleService {
+public class ParkingLotService {
 
     private final Environment env;
     private final MessageSource messageSource;
-    private ParkingLot parkingLot;
+    private final ParkingLot parkingLot;
 
     @Autowired
-    public VehicleService(Environment env, MessageSource messageSource, ParkingLot parkingLot) {
+    public ParkingLotService(Environment env, MessageSource messageSource, ParkingLot parkingLot) {
         this.env = env;
         this.messageSource = messageSource;
         this.parkingLot = parkingLot;
@@ -37,25 +36,25 @@ public class VehicleService {
         if (parkingLot.getMotorcycleSpots() == null) {
             parkingLot.setMotorcycleSpots(Integer.parseInt(Objects.requireNonNull(env.getProperty("custom.spots.motorcycle"))));
             parkingLot.setCarSpots(Integer.parseInt(Objects.requireNonNull(env.getProperty("custom.spots.car"))));
-            parkingLot.setCarSpots(Integer.parseInt(Objects.requireNonNull(env.getProperty("custom.spots.van"))));
+            parkingLot.setVanSpots(Integer.parseInt(Objects.requireNonNull(env.getProperty("custom.spots.van"))));
             int total = parkingLot.getMotorcycleSpots() + parkingLot.getCarSpots() + parkingLot.getVanSpots();
 
             List<ParkingSlot> slots = new ArrayList<>(total);
             int spotNumber = 1;
 
-            for (int i = spotNumber; i <= parkingLot.getMotorcycleSpots(); i++) {
+            for (int i = 0; i < parkingLot.getMotorcycleSpots(); i++) {
                 ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.MOTORCYCLE, null);
                 slots.add(parkingSlot);
                 spotNumber++;
             }
 
-            for (int i = spotNumber; i <= parkingLot.getCarSpots(); i++) {
+            for (int i = 0; i < parkingLot.getCarSpots(); i++) {
                 ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.CAR, null);
                 slots.add(parkingSlot);
                 spotNumber++;
             }
 
-            for (int i = spotNumber; i <= parkingLot.getVanSpots(); i++) {
+            for (int i = 0; i < parkingLot.getVanSpots(); i++) {
                 ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.VAN, null);
                 slots.add(parkingSlot);
                 spotNumber++;
@@ -69,21 +68,48 @@ public class VehicleService {
         return messageSource.getMessage(code, null, Locale.ENGLISH);
     }
 
-    public VehicleDto parkVehicle(VehicleDto vehicleDto) throws BadRequestException {
+    private void parkValidation(VehicleDto vehicleDto) throws BadRequestException {
+        if (vehicleDto == null) {
+            throw new BadRequestException(getMessage("parking.lot.vehicle.required"));
+        } else if (vehicleDto.getId() == null) {
+            throw new BadRequestException(getMessage("parking.lot.vehicle.id.required"));
+        } else if (vehicleDto.getVehicleType() == null) {
+            throw new BadRequestException(getMessage("parking.lot.vehicle.type.required"));
+        } else if (parkingLot.getSlots().stream().filter(ps -> ps.getVehicle().getId().equals(vehicleDto.getId())).findFirst().orElse(null) != null) {
+            throw new BadRequestException(getMessage("parking.lot.vehicle.unique"));
+        }
+    }
+
+    private void removeValidation(Long id) throws BadRequestException {
+        if (id == null) {
+            throw new BadRequestException(getMessage("parking.lot.vehicle.id.required"));
+        } else if (parkingLot.getSlots().stream().filter(ps -> ps.getVehicle().getId().equals(id)).findFirst().orElse(null) == null) {
+            throw new BadRequestException(getMessage("parking.lot.vehicle.presence"));
+        }
+    }
+
+    public void parkVehicle(VehicleDto vehicleDto) throws BadRequestException {
         checkInitialValues();
+        parkValidation(vehicleDto);
         Vehicle vehicle = VehicleFactory.create(vehicleDto.getVehicleType());
 
         if (vehicle != null) {
             vehicle.setId(vehicleDto.getId());
+            vehicle.setVehicleType(vehicleDto.getVehicleType());
             ParkingSlot parkingSlot = vehicle.park(parkingLot);
 
             if (parkingSlot == null) {
-                throw new BadRequestException("Parking lot is full");
+                throw new BadRequestException(getMessage("parking.lot.full"));
             }
 
             parkingSlot.setVehicle(vehicle);
             parkingLot.park(parkingSlot);
-
         }
+    }
+
+    public void removeVehicle(Long id) throws BadRequestException {
+        checkInitialValues();
+        removeValidation(id);
+        parkingLot.remove(id);
     }
 }

@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-public abstract class Vehicle {
+public class ParkingSlot {
 
-    private Long id;
+    private Integer number;
 
-    private VehicleType vehicleType;
+    private VehicleType spotType;
 
-    public abstract ParkingSlot park(ParkingLot parkingLot);
+    private Vehicle vehicle;
 }

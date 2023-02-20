@@ -16,6 +16,6 @@ public class VehicleFactory {
         else if (vehicleType == VehicleType.VAN)
             return new Van();
 
-        return new Vehicle();
+        return null;
     }
 }
