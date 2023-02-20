@@ -32,7 +32,6 @@ public class ParkingLotService {
         this.env = env;
         this.messageSource = messageSource;
         this.parkingLot = parkingLot;
-
         checkInitialValues();
     }
 
@@ -100,7 +99,7 @@ public class ParkingLotService {
         if (vehicle != null) {
             vehicle.setId(vehicleDto.getId());
             vehicle.setVehicleType(vehicleDto.getVehicleType());
-            ParkingSlot parkingSlot = vehicle.park(parkingLot);
+            ParkingSlot parkingSlot = parkingLot.getSlotAvailable(vehicle.getVehicleType());
 
             if (parkingSlot == null) {
                 throw new BadRequestException(getMessage("parking.lot.full"));
@@ -118,18 +117,18 @@ public class ParkingLotService {
 
     public ParkingLotDto getRemainingSpots() {
         ParkingLotDto parkingLotDto = new ParkingLotDto();
-        parkingLotDto.setMotorcycleSpots(parkingLot.remainingSpots(VehicleType.MOTORCYCLE));
-        parkingLotDto.setCarSpots(parkingLot.remainingSpots(VehicleType.CAR));
-        parkingLotDto.setVanSpots(parkingLot.remainingSpots(VehicleType.VAN));
+        parkingLotDto.setMotorcycleSpots(parkingLot.countingSpots(VehicleType.MOTORCYCLE, false));
+        parkingLotDto.setCarSpots(parkingLot.countingSpots(VehicleType.CAR, false));
+        parkingLotDto.setVanSpots(parkingLot.countingSpots(VehicleType.VAN, false));
 
         return parkingLotDto;
     }
 
     public ParkingLotDto getParkedSpots() {
         ParkingLotDto parkingLotDto = new ParkingLotDto();
-        parkingLotDto.setMotorcycleSpots(parkingLot.parkedSpots(VehicleType.MOTORCYCLE));
-        parkingLotDto.setCarSpots(parkingLot.parkedSpots(VehicleType.CAR));
-        parkingLotDto.setVanSpots(parkingLot.parkedSpots(VehicleType.VAN));
+        parkingLotDto.setMotorcycleSpots(parkingLot.countingSpots(VehicleType.MOTORCYCLE, true));
+        parkingLotDto.setCarSpots(parkingLot.countingSpots(VehicleType.CAR, true));
+        parkingLotDto.setVanSpots(parkingLot.countingSpots(VehicleType.VAN, true));
 
         return parkingLotDto;
     }

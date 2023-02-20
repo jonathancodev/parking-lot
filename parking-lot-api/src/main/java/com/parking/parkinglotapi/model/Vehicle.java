@@ -17,6 +17,4 @@ public abstract class Vehicle {
     private Long id;
 
     private VehicleType vehicleType;
-
-    public abstract ParkingSlot park(ParkingLot parkingLot);
 }
