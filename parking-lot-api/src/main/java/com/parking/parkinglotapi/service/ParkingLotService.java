@@ -1,5 +1,7 @@
 package com.parking.parkinglotapi.service;
 
+import com.parking.parkinglotapi.dto.ParkingLotDto;
+import com.parking.parkinglotapi.dto.ParkingSlotDto;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
 import com.parking.parkinglotapi.exceptions.BadRequestException;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ParkingLotService {
@@ -29,6 +32,8 @@ public class ParkingLotService {
         this.env = env;
         this.messageSource = messageSource;
         this.parkingLot = parkingLot;
+
+        checkInitialValues();
     }
 
     private void checkInitialValues() {
@@ -75,7 +80,7 @@ public class ParkingLotService {
             throw new BadRequestException(getMessage("parking.lot.vehicle.id.required"));
         } else if (vehicleDto.getVehicleType() == null) {
             throw new BadRequestException(getMessage("parking.lot.vehicle.type.required"));
-        } else if (parkingLot.getSlots().stream().filter(ps -> ps.getVehicle().getId().equals(vehicleDto.getId())).findFirst().orElse(null) != null) {
+        } else if (parkingLot.getSlots().stream().filter(ps -> ps.getVehicle() != null && ps.getVehicle().getId().equals(vehicleDto.getId())).findFirst().orElse(null) != null) {
             throw new BadRequestException(getMessage("parking.lot.vehicle.unique"));
         }
     }
@@ -83,13 +88,12 @@ public class ParkingLotService {
     private void removeValidation(Long id) throws BadRequestException {
         if (id == null) {
             throw new BadRequestException(getMessage("parking.lot.vehicle.id.required"));
-        } else if (parkingLot.getSlots().stream().filter(ps -> ps.getVehicle().getId().equals(id)).findFirst().orElse(null) == null) {
+        } else if (parkingLot.getSlots().stream().filter(ps -> ps.getVehicle() != null && ps.getVehicle().getId().equals(id)).findFirst().orElse(null) == null) {
             throw new BadRequestException(getMessage("parking.lot.vehicle.presence"));
         }
     }
 
     public void parkVehicle(VehicleDto vehicleDto) throws BadRequestException {
-        checkInitialValues();
         parkValidation(vehicleDto);
         Vehicle vehicle = VehicleFactory.create(vehicleDto.getVehicleType());
 
@@ -108,8 +112,31 @@ public class ParkingLotService {
     }
 
     public void removeVehicle(Long id) throws BadRequestException {
-        checkInitialValues();
         removeValidation(id);
         parkingLot.remove(id);
+    }
+
+    public ParkingLotDto getRemainingSpots() {
+        ParkingLotDto parkingLotDto = new ParkingLotDto();
+        parkingLotDto.setMotorcycleSpots(parkingLot.remainingSpots(VehicleType.MOTORCYCLE));
+        parkingLotDto.setCarSpots(parkingLot.remainingSpots(VehicleType.CAR));
+        parkingLotDto.setVanSpots(parkingLot.remainingSpots(VehicleType.VAN));
+
+        return parkingLotDto;
+    }
+
+    public ParkingLotDto getParkedSpots() {
+        ParkingLotDto parkingLotDto = new ParkingLotDto();
+        parkingLotDto.setMotorcycleSpots(parkingLot.parkedSpots(VehicleType.MOTORCYCLE));
+        parkingLotDto.setCarSpots(parkingLot.parkedSpots(VehicleType.CAR));
+        parkingLotDto.setVanSpots(parkingLot.parkedSpots(VehicleType.VAN));
+
+        return parkingLotDto;
+    }
+
+    public List<ParkingSlotDto> getParkingSlotsFilled() {
+        return parkingLot.slotsFilled().stream()
+                .map(ps -> new ParkingSlotDto(ps.getNumber(), ps.getSpotType(), new VehicleDto(ps.getVehicle())))
+                .collect(Collectors.toList());
     }
 }

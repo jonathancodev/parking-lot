@@ -14,8 +14,8 @@ public class Van extends Vehicle {
             parkingSlot = parkingLot.getSlots()
                     .stream()
                     .filter(ps -> ps.getSpotType() == VehicleType.CAR && ps.getVehicle() == null &&
-                            (ps.getNumber() > 1 && parkingLot.getSlots().get(ps.getNumber() - 2).getVehicle() == null) &&
-                            (ps.getNumber() < parkingLot.getSlots().size() && parkingLot.getSlots().get(ps.getNumber()).getVehicle() == null))
+                            (ps.getNumber() > 1 && parkingLot.getSlots().get(ps.getNumber() - 2).getSpotType() == VehicleType.CAR && parkingLot.getSlots().get(ps.getNumber() - 2).getVehicle() == null) &&
+                            (ps.getNumber() < parkingLot.getSlots().size() && parkingLot.getSlots().get(ps.getNumber()).getSpotType() == VehicleType.CAR && parkingLot.getSlots().get(ps.getNumber()).getVehicle() == null))
                     .findFirst()
                     .orElse(null);
         }

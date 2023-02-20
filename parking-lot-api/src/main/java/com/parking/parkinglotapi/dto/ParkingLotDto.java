@@ -11,13 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ParkingLotDto {
 
-    private Long id;
-
     private Long motorcycleSpots;
 
     private Long carSpots;
 
     private Long vanSpots;
-
-    private Long currentSpot;
 }

@@ -11,14 +11,11 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class VehicleDto {
+public class ParkingSlotDto {
 
-    public VehicleDto(Vehicle vehicle) {
-        this.id = vehicle.getId();
-        this.vehicleType = vehicle.getVehicleType();
-    }
+    private Integer number;
 
-    private Long id;
+    private VehicleType spotType;
 
-    private VehicleType vehicleType;
+    private VehicleDto vehicle;
 }

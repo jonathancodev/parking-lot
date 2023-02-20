@@ -1,6 +1,7 @@
 package com.parking.parkinglotapi.api;
 
 import com.parking.parkinglotapi.dto.ParkingLotDto;
+import com.parking.parkinglotapi.dto.ParkingSlotDto;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.exceptions.BadRequestException;
 import com.parking.parkinglotapi.service.ParkingLotService;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
+
+import java.util.List;
 
 @RestController
 @Api(value = "Parking Lot Vehicle", produces = MediaType.APPLICATION_JSON_VALUE, tags = {"Parking Lot Vehicle", "Parking Lot Dashboard"})
@@ -42,7 +45,20 @@ public class ParkingLotApiController implements ParkingLotApi {
     }
 
     @Override
+    public ResponseEntity<List<ParkingSlotDto>> getParkingSlotsFilled() {
+        List<ParkingSlotDto> parkingSlotDtoList = parkingLotService.getParkingSlotsFilled();
+        return new ResponseEntity<>(parkingSlotDtoList, HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<ParkingLotDto> getRemainingSpots() {
-        return null;
+        ParkingLotDto parkingLotDto = parkingLotService.getRemainingSpots();
+        return new ResponseEntity<>(parkingLotDto, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<ParkingLotDto> getParkedSpots() {
+        ParkingLotDto parkingLotDto = parkingLotService.getParkedSpots();
+        return new ResponseEntity<>(parkingLotDto, HttpStatus.OK);
     }
 }

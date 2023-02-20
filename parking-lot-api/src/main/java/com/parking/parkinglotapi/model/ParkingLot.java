@@ -1,5 +1,7 @@
 package com.parking.parkinglotapi.model;
 
+import com.parking.parkinglotapi.dto.ParkingSlotDto;
+import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode
@@ -46,11 +49,9 @@ public class ParkingLot {
     }
 
     public void remove(Long id) {
-        ParkingSlot parkingSlot = slots.stream().filter(ps -> ps.getVehicle().getId().equals(id)).findFirst().orElse(null);
+        ParkingSlot parkingSlot = slots.stream().filter(ps -> ps.getVehicle() != null && ps.getVehicle().getId().equals(id)).findFirst().orElse(null);
 
         if (parkingSlot != null) {
-            parkingSlot.setVehicle(null);
-            slots.set(parkingSlot.getNumber() - 1, parkingSlot);
             if (parkingSlot.getSpotType() == VehicleType.CAR && parkingSlot.getVehicle().getVehicleType() == VehicleType.VAN) {
                 ParkingSlot parkingSlotCurrent = getSlots().get(parkingSlot.getNumber());
                 parkingSlotCurrent.setVehicle(null);
@@ -59,6 +60,29 @@ public class ParkingLot {
                 slots.set(parkingSlotCurrent.getNumber() - 1, parkingSlotCurrent);
                 slots.set(parkingSlotNext.getNumber() - 1, parkingSlotNext);
             }
+            parkingSlot.setVehicle(null);
+            slots.set(parkingSlot.getNumber() - 1, parkingSlot);
         }
+    }
+
+    public List<ParkingSlot> slotsFilled() {
+        return slots
+                .stream()
+                .filter(ps -> ps.getVehicle() != null)
+                .collect(Collectors.toList());
+    }
+
+    public Long remainingSpots(VehicleType vehicleType) {
+        return slots
+                .stream()
+                .filter(ps -> ps.getSpotType() == vehicleType && ps.getVehicle() == null)
+                .count();
+    }
+
+    public Long parkedSpots(VehicleType vehicleType) {
+        return slots
+                .stream()
+                .filter(ps -> ps.getSpotType() == vehicleType && ps.getVehicle() != null)
+                .count();
     }
 }
