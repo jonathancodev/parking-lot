@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -19,4 +21,6 @@ public class ParkingSlot {
     private VehicleType spotType;
 
     private Vehicle vehicle;
+
+    private Date parkingDate;
 }

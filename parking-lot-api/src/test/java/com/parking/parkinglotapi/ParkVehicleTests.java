@@ -27,10 +27,19 @@ public class ParkVehicleTests {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ParkVehicleTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) {
+    public ParkVehicleTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) throws Exception {
         this.mockMvc = mockMvc;
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
+        clearAll(1,5);
+    }
+
+    private void clearAll(int from, int to) throws Exception {
+        for (int i=from; i<=to; i++) {
+            this.mockMvc.perform(delete("/vehicle/remove/"+i)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+        }
     }
 
     private String getMessage(String code) {
@@ -80,9 +89,7 @@ public class ParkVehicleTests {
 
     @Test
     public void whenParkVehicle() throws Exception {
-        VehicleDto vehicleDto = new VehicleDto();
-        vehicleDto.setId(1L);
-        vehicleDto.setVehicleType(VehicleType.MOTORCYCLE);
+        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
 
         this.mockMvc.perform(post("/vehicle/park")
                 .content(objectMapper.writeValueAsString(vehicleDto))
@@ -93,9 +100,7 @@ public class ParkVehicleTests {
 
     @Test
     public void whenParkVehicleDuplicate() throws Exception {
-        VehicleDto vehicleDto = new VehicleDto();
-        vehicleDto.setId(2L);
-        vehicleDto.setVehicleType(VehicleType.MOTORCYCLE);
+        VehicleDto vehicleDto = new VehicleDto(2L, VehicleType.MOTORCYCLE);
 
         this.mockMvc.perform(post("/vehicle/park")
                 .content(objectMapper.writeValueAsString(vehicleDto))

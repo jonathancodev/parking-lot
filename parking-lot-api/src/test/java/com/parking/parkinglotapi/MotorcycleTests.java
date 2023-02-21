@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Locale;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,10 +27,19 @@ public class MotorcycleTests {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public MotorcycleTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) {
+    public MotorcycleTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) throws Exception {
         this.mockMvc = mockMvc;
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
+        clearAll(1,5);
+    }
+
+    private void clearAll(int from, int to) throws Exception {
+        for (int i=from; i<=to; i++) {
+            this.mockMvc.perform(delete("/vehicle/remove/"+i)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON));
+        }
     }
 
     private String getMessage(String code) {
@@ -40,9 +50,7 @@ public class MotorcycleTests {
     public void whenParkMotorcyclesInAllSpots() throws Exception {
 
         for (long i=1; i<=5; i++) {
-            VehicleDto vehicleDto = new VehicleDto();
-            vehicleDto.setId(i);
-            vehicleDto.setVehicleType(VehicleType.MOTORCYCLE);
+            VehicleDto vehicleDto = new VehicleDto(i, VehicleType.MOTORCYCLE);
 
             this.mockMvc.perform(post("/vehicle/park")
                     .content(objectMapper.writeValueAsString(vehicleDto))
@@ -51,9 +59,7 @@ public class MotorcycleTests {
                     .andExpect(status().isOk());
         }
 
-        VehicleDto vehicleDto = new VehicleDto();
-        vehicleDto.setId(6L);
-        vehicleDto.setVehicleType(VehicleType.MOTORCYCLE);
+        VehicleDto vehicleDto = new VehicleDto(6L, VehicleType.MOTORCYCLE);
 
         String msg = this.mockMvc.perform(post("/vehicle/park")
                 .content(objectMapper.writeValueAsString(vehicleDto))

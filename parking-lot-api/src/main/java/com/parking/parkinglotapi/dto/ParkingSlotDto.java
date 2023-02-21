@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @EqualsAndHashCode
 @NoArgsConstructor
@@ -18,4 +20,6 @@ public class ParkingSlotDto {
     private VehicleType spotType;
 
     private VehicleDto vehicle;
+
+    private Date parkingDate;
 }

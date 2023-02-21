@@ -15,6 +15,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -47,19 +50,19 @@ public class ParkingLotService {
             int spotNumber = 1;
 
             for (int i = 0; i < parkingLot.getMotorcycleSpots(); i++) {
-                ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.MOTORCYCLE, null);
+                ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.MOTORCYCLE, null, null);
                 slots.add(parkingSlot);
                 spotNumber++;
             }
 
             for (int i = 0; i < parkingLot.getCarSpots(); i++) {
-                ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.CAR, null);
+                ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.CAR, null, null);
                 slots.add(parkingSlot);
                 spotNumber++;
             }
 
             for (int i = 0; i < parkingLot.getVanSpots(); i++) {
-                ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.VAN, null);
+                ParkingSlot parkingSlot = new ParkingSlot(spotNumber, VehicleType.VAN, null, null);
                 slots.add(parkingSlot);
                 spotNumber++;
             }
@@ -106,6 +109,7 @@ public class ParkingLotService {
             }
 
             parkingSlot.setVehicle(vehicle);
+            parkingSlot.setParkingDate(new Date());
             parkingLot.park(parkingSlot);
         }
     }
@@ -139,7 +143,8 @@ public class ParkingLotService {
 
     public List<ParkingSlotDto> getParkingSlotsFilled() {
         return parkingLot.slotsFilled().stream()
-                .map(ps -> new ParkingSlotDto(ps.getNumber(), ps.getSpotType(), new VehicleDto(ps.getVehicle())))
+                .map(ps -> new ParkingSlotDto(ps.getNumber(), ps.getSpotType(), new VehicleDto(ps.getVehicle()), ps.getParkingDate()))
+                .sorted(Comparator.comparing(ParkingSlotDto::getParkingDate).reversed())
                 .collect(Collectors.toList());
     }
 }

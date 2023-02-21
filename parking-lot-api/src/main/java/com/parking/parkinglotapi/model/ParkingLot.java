@@ -81,12 +81,15 @@ public class ParkingLot {
             if (parkingSlot.getSpotType() == VehicleType.CAR && parkingSlot.getVehicle().getVehicleType() == VehicleType.VAN) {
                 ParkingSlot parkingSlotCurrent = getSlots().get(parkingSlot.getNumber());
                 parkingSlotCurrent.setVehicle(null);
+                parkingSlotCurrent.setParkingDate(null);
                 ParkingSlot parkingSlotNext = getSlots().get(parkingSlot.getNumber() + 1);
                 parkingSlotNext.setVehicle(null);
+                parkingSlotNext.setParkingDate(null);
                 slots.set(parkingSlotCurrent.getNumber() - 1, parkingSlotCurrent);
                 slots.set(parkingSlotNext.getNumber() - 1, parkingSlotNext);
             }
             parkingSlot.setVehicle(null);
+            parkingSlot.setParkingDate(null);
             slots.set(parkingSlot.getNumber() - 1, parkingSlot);
         }
     }
