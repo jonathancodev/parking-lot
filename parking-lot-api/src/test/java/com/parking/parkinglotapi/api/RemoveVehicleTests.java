@@ -1,4 +1,4 @@
-package com.parking.parkinglotapi;
+package com.parking.parkinglotapi.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parking.parkinglotapi.dto.VehicleDto;
@@ -20,14 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MotorcycleTests {
+public class RemoveVehicleTests {
 
     private final MockMvc mockMvc;
     private final MessageSource messageSource;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public MotorcycleTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) throws Exception {
+    public RemoveVehicleTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) throws Exception {
         this.mockMvc = mockMvc;
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
@@ -47,22 +47,25 @@ public class MotorcycleTests {
     }
 
     @Test
-    public void whenParkMotorcyclesInAllSpots() throws Exception {
+    public void whenRemoveVehicleWithoutId() throws Exception {
+        this.mockMvc.perform(delete("/vehicle/remove")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
-        for (long i=1; i<=5; i++) {
-            VehicleDto vehicleDto = new VehicleDto(i, VehicleType.MOTORCYCLE);
+    @Test
+    public void whenRemoveVehicleWithWrongId() throws Exception {
+        this.mockMvc.perform(delete("/vehicle/remove/p")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 
-            this.mockMvc.perform(post("/vehicle/park")
-                    .content(objectMapper.writeValueAsString(vehicleDto))
-                    .accept(MediaType.APPLICATION_JSON)
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk());
-        }
+    @Test
+    public void whenRemoveVehicleWithNoPresence() throws Exception {
 
-        VehicleDto vehicleDto = new VehicleDto(6L, VehicleType.MOTORCYCLE);
-
-        String msg = this.mockMvc.perform(post("/vehicle/park")
-                .content(objectMapper.writeValueAsString(vehicleDto))
+        String msg = this.mockMvc.perform(delete("/vehicle/remove/0")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
@@ -70,7 +73,23 @@ public class MotorcycleTests {
                 .getResponse()
                 .getContentAsString();
 
-        Assertions.assertEquals(msg, getMessage("parking.lot.full"));
+        Assertions.assertEquals(msg, getMessage("parking.lot.vehicle.presence"));
+    }
+
+    @Test
+    public void whenRemoveVehicle() throws Exception {
+        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
+
+        this.mockMvc.perform(post("/vehicle/park")
+                .content(objectMapper.writeValueAsString(vehicleDto))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(delete("/vehicle/remove/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
 }

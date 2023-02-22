@@ -1,4 +1,4 @@
-package com.parking.parkinglotapi;
+package com.parking.parkinglotapi.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
