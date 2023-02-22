@@ -1,4 +1,5 @@
 # Parking Lot API
+The application API is storing all data in memory, therefore when you stop the application all the data will be lost.
 ## Run without Docker
 ### Install JDK
 - Install Java 11 or above in your PC
@@ -17,6 +18,13 @@
 - Run using pre-install maven on Windows: `mvnw.cmd spring-boot:run -Dspring-boot.run.jvmArguments="-Xms1024m -Xmx2048m"`
 - Run using your maven install: `mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xms1024m -Xmx2048m"`
 
+The application API by default supports at max 2048mb of memory usage.
+In order to increase the limit you must increase also the JVM memory when you run the application, for example: `mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xms2048m -Xmx4096m"`
+
+Also by default, the application API has 1 Motorcycle spot, 3 Car spot and 1 Van spot.
+In order to change those values, you should pass the arguments when you run the application, for example: 
+`mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xms2048m -Xmx4096m" -Dspring-boot.run.arguments="--custom.spots.motorcycle=10 --custom.spots.car=10 --custom.spots.van=10"`
+
 Check if the API is running accessing: `http://localhost:8080/api/`
 
 ## Run with Docker
@@ -31,6 +39,13 @@ Check if the API is running accessing: `http://localhost:8080/api/`
 
 ### Run the app on container
 - `docker run -p 8080:8080 --name parking-lot-api -d parking-lot-api`
+
+The application API by default supports at max 2048mb of memory usage.
+In order to increase the limit you must increase also the JVM memory on the Dockerfile before build the image of the application: `CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Xms2048m -Xmx4096m"]`
+
+Also by default, the application API has 1 Motorcycle spot, 3 Car spot and 1 Van spot.
+In order to change those values, you should pass the arguments on the Dockerfile before build the image of the application, for example:
+`CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Xms2048m -Xmx4096m", "-Dspring-boot.run.arguments=--custom.spots.motorcycle=10 --custom.spots.car=10 --custom.spots.van=10"]`
 
 Check if the API is running accessing: `http://localhost:8080/api/`
 
