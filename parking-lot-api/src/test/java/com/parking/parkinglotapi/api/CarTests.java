@@ -3,6 +3,7 @@ package com.parking.parkinglotapi.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,19 +32,19 @@ public class CarTests {
         this.mockMvc = mockMvc;
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
-        clearAll(1,5);
     }
 
-    private String getMessage(String code) {
-        return messageSource.getMessage(code, null, Locale.ENGLISH);
-    }
-
-    private void clearAll(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
+    @AfterEach
+    void clearAll() throws Exception {
+        for (int i=1; i<=5; i++) {
             this.mockMvc.perform(delete("/vehicle/remove/"+i)
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON));
         }
+    }
+
+    private String getMessage(String code) {
+        return messageSource.getMessage(code, null, Locale.ENGLISH);
     }
 
     @Test

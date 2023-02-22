@@ -2,10 +2,10 @@ package com.parking.parkinglotapi.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.parking.parkinglotapi.dto.ParkingLotDto;
 import com.parking.parkinglotapi.dto.ParkingSlotDto;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -30,35 +29,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ParkingSlotTests {
 
     private final MockMvc mockMvc;
-    private final MessageSource messageSource;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ParkingSlotTests(MockMvc mockMvc, MessageSource messageSource, ObjectMapper objectMapper) throws Exception {
+    public ParkingSlotTests(MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
         this.mockMvc = mockMvc;
-        this.messageSource = messageSource;
         this.objectMapper = objectMapper;
-        clearAll(1,5);
     }
 
-    private void clearAll(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
+    @AfterEach
+    void clearAll() throws Exception {
+        for (int i=1; i<=5; i++) {
             this.mockMvc.perform(delete("/vehicle/remove/"+i)
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON));
-        }
-    }
-
-    private void clear(int id) throws Exception {
-        this.mockMvc.perform(delete("/vehicle/remove/"+id)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    private void clear(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
-            clear(i);
         }
     }
 
@@ -96,8 +80,8 @@ public class ParkingSlotTests {
         ParkingSlotDto parkingLotDto3 = new ParkingSlotDto(5, VehicleType.VAN, vehicleDto3, null );
         parkingSlotDtoList.add(parkingLotDto3);
 
-        for (long i = 4L; i>=2L; i--) {
-            ParkingSlotDto parkingLotDto2 = new ParkingSlotDto((int) i, VehicleType.CAR, new VehicleDto(i, VehicleType.CAR), null );
+        for (int i = 4; i>=2; i--) {
+            ParkingSlotDto parkingLotDto2 = new ParkingSlotDto(i, VehicleType.CAR, new VehicleDto((long) i, VehicleType.CAR), null );
             parkingSlotDtoList.add(parkingLotDto2);
         }
 
@@ -119,8 +103,6 @@ public class ParkingSlotTests {
                 .collect(Collectors.toList());
 
         Assertions.assertEquals(parkingSlotDtoList, parkingSlotDtoListResponse);
-
-        clear(1, 5);
     }
 
 }

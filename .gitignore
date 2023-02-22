@@ -1,3 +1,4 @@
+#API
 parking-lot-api/target/
 parking-lot-api/!.mvn/wrapper/maven-wrapper.jar
 parking-lot-api/!**/src/main/**/target/
@@ -17,3 +18,27 @@ parking-lot-api/.idea
 parking-lot-api/*.iws
 parking-lot-api/*.iml
 parking-lot-api/*.ipr
+
+#UI
+# dependencies
+parking-lot-ui/.idea
+parking-lot-ui/node_modules
+parking-lot-ui/.pnp
+parking-lot-ui/.pnp.js
+
+# testing
+parking-lot-ui/coverage
+
+# production
+parking-lot-ui/build
+
+# misc
+parking-lot-ui/.DS_Store
+parking-lot-ui/.env.local
+parking-lot-ui/.env.development.local
+parking-lot-ui/.env.test.local
+parking-lot-ui/.env.production.local
+
+parking-lot-ui/npm-debug.log*
+parking-lot-ui/yarn-debug.log*
+parking-lot-ui/yarn-error.log*

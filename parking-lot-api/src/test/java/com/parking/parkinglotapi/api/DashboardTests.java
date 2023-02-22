@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parking.parkinglotapi.dto.ParkingLotDto;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,27 +29,14 @@ public class DashboardTests {
     public DashboardTests(MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
         this.mockMvc = mockMvc;
         this.objectMapper = objectMapper;
-        clearAll(1,5);
     }
 
-    private void clearAll(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
+    @AfterEach
+    void clearAll() throws Exception {
+        for (int i=1; i<=5; i++) {
             this.mockMvc.perform(delete("/vehicle/remove/"+i)
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON));
-        }
-    }
-
-    private void clear(int id) throws Exception {
-        this.mockMvc.perform(delete("/vehicle/remove/"+id)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    private void clear(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
-            clear(i);
         }
     }
 
@@ -86,8 +74,6 @@ public class DashboardTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, "No");
-
-        clear(1);
     }
 
     @Test
@@ -112,8 +98,6 @@ public class DashboardTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, objectMapper.writeValueAsString(parkingLotDto));
-
-        clear(1);
     }
 
     @Test
@@ -138,8 +122,6 @@ public class DashboardTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, objectMapper.writeValueAsString(parkingLotDto));
-
-        clear(1);
     }
 
     @Test
@@ -164,8 +146,6 @@ public class DashboardTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, "Yes");
-
-        clear(1, 5);
     }
 
 }

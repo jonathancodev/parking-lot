@@ -5,10 +5,10 @@ import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
 import com.parking.parkinglotapi.exceptions.BadRequestException;
 import com.parking.parkinglotapi.service.ParkingLotService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.MessageSource;
 
@@ -17,36 +17,25 @@ import java.util.Locale;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@AutoConfigureMockMvc
 public class ParkingLotServiceTests {
 
     private final MessageSource messageSource;
     private final ParkingLotService parkingLotService;
 
     @Autowired
-    public ParkingLotServiceTests(MessageSource messageSource, ParkingLotService parkingLotService) throws Exception {
+    public ParkingLotServiceTests(MessageSource messageSource, ParkingLotService parkingLotService) {
         this.messageSource = messageSource;
         this.parkingLotService = parkingLotService;
-        clearAll(1,5);
     }
 
-    private void clearAll(int from, int to) throws Exception {
-        for (long i=from; i<=to; i++) {
+    @AfterEach
+    void clearAll() {
+        for (long i=1; i<=5; i++) {
             try {
                 parkingLotService.removeVehicle(i);
             } catch (Exception ignored) {
 
             }
-        }
-    }
-
-    private void clear(int id) throws Exception {
-        parkingLotService.removeVehicle((long) id);
-    }
-
-    private void clear(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
-            clear(i);
         }
     }
 
@@ -90,7 +79,6 @@ public class ParkingLotServiceTests {
     public void whenParkVehicle() throws Exception {
         VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
         parkingLotService.parkVehicle(vehicleDto);
-        clear(1);
     }
 
     @Test
@@ -102,7 +90,6 @@ public class ParkingLotServiceTests {
         });
 
         Assertions.assertEquals(exception.getMessage(), getMessage("parking.lot.vehicle.unique"));
-        clear(1);
     }
 
     @Test
@@ -140,7 +127,6 @@ public class ParkingLotServiceTests {
         VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
         parkingLotService.parkVehicle(vehicleDto);
         Assertions.assertFalse(parkingLotService.isParkedLotFull());
-        clear(1);
     }
 
     @Test
@@ -148,7 +134,6 @@ public class ParkingLotServiceTests {
         VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
         parkingLotService.parkVehicle(vehicleDto);
         Assertions.assertEquals(new ParkingLotDto(0L,3L,1L), parkingLotService.getRemainingSpots());
-        clear(1);
     }
 
     @Test
@@ -156,7 +141,6 @@ public class ParkingLotServiceTests {
         VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
         parkingLotService.parkVehicle(vehicleDto);
         Assertions.assertEquals(new ParkingLotDto(1L,0L,0L), parkingLotService.getParkedSpots());
-        clear(1);
     }
 
     @Test
@@ -168,7 +152,6 @@ public class ParkingLotServiceTests {
         }
 
         Assertions.assertTrue(parkingLotService.isParkedLotFull());
-        clear(1, 5);
     }
 
     @Test
@@ -185,7 +168,6 @@ public class ParkingLotServiceTests {
         });
 
         Assertions.assertEquals(exception.getMessage(), getMessage("parking.lot.full"));
-        clear(1, 5);
     }
 
 }

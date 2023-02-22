@@ -3,6 +3,7 @@ package com.parking.parkinglotapi.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +32,19 @@ public class VanTests {
         this.mockMvc = mockMvc;
         this.messageSource = messageSource;
         this.objectMapper = objectMapper;
-        clearAll(1,5);
     }
 
-    private String getMessage(String code) {
-        return messageSource.getMessage(code, null, Locale.ENGLISH);
-    }
-
-    private void clearAll(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
+    @AfterEach
+    void clearAll() throws Exception {
+        for (int i=1; i<=5; i++) {
             this.mockMvc.perform(delete("/vehicle/remove/"+i)
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON));
         }
     }
 
-    private void clear(int id) throws Exception {
-        this.mockMvc.perform(delete("/vehicle/remove/"+id)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-
-    private void clear(int from, int to) throws Exception {
-        for (int i=from; i<=to; i++) {
-            clear(i);
-        }
+    private String getMessage(String code) {
+        return messageSource.getMessage(code, null, Locale.ENGLISH);
     }
 
     @Test
@@ -84,8 +72,6 @@ public class VanTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, getMessage("parking.lot.full"));
-
-        clear(4, 5);
     }
 
     @Test
@@ -100,8 +86,6 @@ public class VanTests {
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         }
-
-        clear(1, 2);
     }
 
     @Test
@@ -135,9 +119,6 @@ public class VanTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
-        clear(1);
-        clear(3);
     }
 
     @Test
@@ -171,8 +152,6 @@ public class VanTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, getMessage("parking.lot.full"));
-
-        clear(1, 2);
     }
 
     @Test
@@ -208,8 +187,6 @@ public class VanTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, getMessage("parking.lot.full"));
-
-        clear(1, 3);
     }
 
     @Test
@@ -245,8 +222,6 @@ public class VanTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, getMessage("parking.lot.full"));
-
-        clear(1, 4);
     }
 
     @Test
@@ -270,8 +245,6 @@ public class VanTests {
                     .andExpect(status().isOk());
         }
 
-        clear(2);
-
         VehicleDto vehicleDto5 = new VehicleDto(5L, VehicleType.VAN);
 
         String msg = this.mockMvc.perform(post("/vehicle/park")
@@ -284,9 +257,6 @@ public class VanTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, getMessage("parking.lot.full"));
-
-        clear(1);
-        clear(3, 4);
     }
 
     @Test
@@ -310,8 +280,6 @@ public class VanTests {
                     .andExpect(status().isOk());
         }
 
-        clear(3);
-
         VehicleDto vehicleDto5 = new VehicleDto(5L, VehicleType.VAN);
 
         String msg = this.mockMvc.perform(post("/vehicle/park")
@@ -324,9 +292,6 @@ public class VanTests {
                 .getContentAsString();
 
         Assertions.assertEquals(msg, getMessage("parking.lot.full"));
-
-        clear(1, 2);
-        clear(4);
     }
 
 }
