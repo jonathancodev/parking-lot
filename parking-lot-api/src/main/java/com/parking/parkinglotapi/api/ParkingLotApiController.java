@@ -57,8 +57,8 @@ public class ParkingLotApiController implements ParkingLotApi {
     }
 
     @Override
-    public ResponseEntity<ParkingLotDto> getParkedSpots() {
-        ParkingLotDto parkingLotDto = parkingLotService.getParkedSpots();
+    public ResponseEntity<ParkingLotDto> getVanParkedSpots() {
+        ParkingLotDto parkingLotDto = parkingLotService.getVanParkedSpots();
         return new ResponseEntity<>(parkingLotDto, HttpStatus.OK);
     }
 

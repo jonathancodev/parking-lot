@@ -121,18 +121,18 @@ public class ParkingLotService {
 
     public ParkingLotDto getRemainingSpots() {
         ParkingLotDto parkingLotDto = new ParkingLotDto();
-        parkingLotDto.setMotorcycleSpots(parkingLot.countingSpots(VehicleType.MOTORCYCLE, false));
-        parkingLotDto.setCarSpots(parkingLot.countingSpots(VehicleType.CAR, false));
-        parkingLotDto.setVanSpots(parkingLot.countingSpots(VehicleType.VAN, false));
+        parkingLotDto.setMotorcycleSpots(parkingLot.countRemainingSpots(VehicleType.MOTORCYCLE));
+        parkingLotDto.setCarSpots(parkingLot.countRemainingSpots(VehicleType.CAR));
+        parkingLotDto.setVanSpots(parkingLot.countRemainingSpots(VehicleType.VAN));
 
         return parkingLotDto;
     }
 
-    public ParkingLotDto getParkedSpots() {
+    public ParkingLotDto getVanParkedSpots() {
         ParkingLotDto parkingLotDto = new ParkingLotDto();
-        parkingLotDto.setMotorcycleSpots(parkingLot.countingSpots(VehicleType.MOTORCYCLE, true));
-        parkingLotDto.setCarSpots(parkingLot.countingSpots(VehicleType.CAR, true));
-        parkingLotDto.setVanSpots(parkingLot.countingSpots(VehicleType.VAN, true));
+        parkingLotDto.setMotorcycleSpots(0L);
+        parkingLotDto.setCarSpots(parkingLot.countVanParkedSpots(VehicleType.CAR));
+        parkingLotDto.setVanSpots(parkingLot.countVanParkedSpots(VehicleType.VAN));
 
         return parkingLotDto;
     }

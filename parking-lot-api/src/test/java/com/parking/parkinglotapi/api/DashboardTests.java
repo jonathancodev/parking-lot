@@ -101,9 +101,9 @@ public class DashboardTests {
     }
 
     @Test
-    public void parkingSpotParked() throws Exception {
+    public void parkingVanParkedSpots() throws Exception {
 
-        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
+        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.VAN);
 
         this.mockMvc.perform(post("/vehicle/park")
                 .content(objectMapper.writeValueAsString(vehicleDto))
@@ -111,9 +111,9 @@ public class DashboardTests {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        ParkingLotDto parkingLotDto = new ParkingLotDto(1L,0L,0L);
+        ParkingLotDto parkingLotDto = new ParkingLotDto(0L,0L,1L);
 
-        String msg = this.mockMvc.perform(get("/dashboard/parked-spots")
+        String msg = this.mockMvc.perform(get("/dashboard/van-parked-spots")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

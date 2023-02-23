@@ -1,22 +1,37 @@
 import React, {FC} from 'react';
-import {Card, CardContent, CardHeader, Typography} from "@mui/material";
+import {Card, CardContent, CardHeader, Grid, Typography} from "@mui/material";
 import ParkingLotCardProps from "../interfaces/ParkingLotCardProps";
 
 const ParkingLotCard: FC<ParkingLotCardProps> = (parkingLotCardProps) => {
 
     return (
-        <Card sx={{ minWidth: 275, justifyContent:'start', alignItems: 'start' }}>
+        <Card sx={{ minWidth: 275 }}>
             <CardHeader title={parkingLotCardProps.title} sx={{borderBottom: '1px solid', marginLeft: '20px', marginRight: '20px'}}/>
             <CardContent>
-                <Typography component="div">
-                   Cars: {parkingLotCardProps.parkingLot.carSpots}
-                </Typography>
-                <Typography component="div">
-                    Vans: {parkingLotCardProps.parkingLot.vanSpots}
-                </Typography>
-                <Typography component="div">
-                    Motorcycles: {parkingLotCardProps.parkingLot.motorcycleSpots}
-                </Typography>
+                <Grid container sx={{justifyContent: 'space-between'}}>
+                    <Typography component="div">
+                       Cars:
+                    </Typography>
+                    <Typography component="div">
+                        {parkingLotCardProps.parkingLot.carSpots}
+                    </Typography>
+                </Grid>
+                <Grid container sx={{justifyContent: 'space-between'}}>
+                    <Typography component="div">
+                        Vans:
+                    </Typography>
+                    <Typography component="div">
+                        {parkingLotCardProps.parkingLot.vanSpots}
+                    </Typography>
+                </Grid>
+                <Grid container sx={{justifyContent: 'space-between'}}>
+                    <Typography component="div">
+                        Motorcycles:
+                    </Typography>
+                    <Typography component="div">
+                        {parkingLotCardProps.parkingLot.motorcycleSpots}
+                    </Typography>
+                </Grid>
             </CardContent>
         </Card>
     );

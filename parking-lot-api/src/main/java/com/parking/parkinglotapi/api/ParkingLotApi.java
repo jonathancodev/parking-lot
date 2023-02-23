@@ -78,8 +78,8 @@ public interface ParkingLotApi {
             @ApiResponse(responseCode = "404", description = "Not found"),
             @ApiResponse(responseCode = "500", description = "Internal server error, contact the admin"),
             @ApiResponse(responseCode = "503", description = "Service unavailable, try again later")})
-    @RequestMapping(value = "/dashboard/parked-spots", produces = {"application/json"}, method = RequestMethod.GET)
-    ResponseEntity<ParkingLotDto> getParkedSpots();
+    @RequestMapping(value = "/dashboard/van-parked-spots", produces = {"application/json"}, method = RequestMethod.GET)
+    ResponseEntity<ParkingLotDto> getVanParkedSpots();
 
     @Operation(summary = "Is parked lot full?", description = "is parked lot full?", tags = {"Parking Lot Dashboard"})
     @ApiResponses(value = {

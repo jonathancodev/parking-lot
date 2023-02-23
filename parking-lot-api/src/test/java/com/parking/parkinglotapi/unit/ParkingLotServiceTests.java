@@ -1,6 +1,8 @@
 package com.parking.parkinglotapi.unit;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.parking.parkinglotapi.dto.ParkingLotDto;
+import com.parking.parkinglotapi.dto.ParkingSlotDto;
 import com.parking.parkinglotapi.dto.VehicleDto;
 import com.parking.parkinglotapi.enums.VehicleType;
 import com.parking.parkinglotapi.exceptions.BadRequestException;
@@ -11,10 +13,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 public class ParkingLotServiceTests {
@@ -137,10 +146,12 @@ public class ParkingLotServiceTests {
     }
 
     @Test
-    public void parkingSpotParked() throws Exception {
-        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
+    public void parkingSpotVanParkedSpots() throws Exception {
+        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.VAN);
         parkingLotService.parkVehicle(vehicleDto);
-        Assertions.assertEquals(new ParkingLotDto(1L,0L,0L), parkingLotService.getParkedSpots());
+        VehicleDto vehicleDto2 = new VehicleDto(2L, VehicleType.VAN);
+        parkingLotService.parkVehicle(vehicleDto2);
+        Assertions.assertEquals(new ParkingLotDto(0L,3L,1L), parkingLotService.getVanParkedSpots());
     }
 
     @Test
@@ -168,6 +179,36 @@ public class ParkingLotServiceTests {
         });
 
         Assertions.assertEquals(exception.getMessage(), getMessage("parking.lot.full"));
+    }
+
+    @Test
+    public void parkingSlotsFilled() throws Exception {
+        List<ParkingSlotDto> parkingSlotDtoList = new ArrayList<>();
+
+        VehicleDto vehicleDto = new VehicleDto(1L, VehicleType.MOTORCYCLE);
+        parkingLotService.parkVehicle(vehicleDto);
+        ParkingSlotDto parkingLotDto = new ParkingSlotDto(1, VehicleType.MOTORCYCLE, vehicleDto, null );
+        parkingSlotDtoList.add(parkingLotDto);
+
+        for (int i=2; i<=4; i++) {
+            VehicleDto vehicleDto2 = new VehicleDto((long) i, VehicleType.CAR);
+            parkingLotService.parkVehicle(vehicleDto2);
+            ParkingSlotDto parkingLotDto2 = new ParkingSlotDto(i, VehicleType.CAR, new VehicleDto((long) i, VehicleType.CAR), null );
+            parkingSlotDtoList.add(parkingLotDto2);
+        }
+
+        VehicleDto vehicleDto3 = new VehicleDto(5L, VehicleType.VAN);
+        parkingLotService.parkVehicle(vehicleDto3);
+
+        ParkingSlotDto parkingLotDto3 = new ParkingSlotDto(5, VehicleType.VAN, vehicleDto3, null );
+        parkingSlotDtoList.add(parkingLotDto3);
+
+        List<ParkingSlotDto> parkingSlotDtoListResponse = parkingLotService.getParkingSlotsFilled();
+        parkingSlotDtoListResponse = parkingSlotDtoListResponse.stream().
+                peek(parkingSlotDto -> parkingSlotDto.setParkingDate(null))
+                .collect(Collectors.toList());
+
+        Assertions.assertEquals(parkingSlotDtoList, parkingSlotDtoListResponse);
     }
 
 }

@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
+import React, {FC, useState} from 'react';
 import {Form, FormikProvider, useFormik} from "formik";
 import * as Yup from 'yup';
-import {Button, Card, CardContent, CardHeader, Grid, MenuItem, TextField, Typography} from "@mui/material";
+import {Button, Card, CardContent, CardHeader, Grid, MenuItem, TextField} from "@mui/material";
 import VehicleTypeEnum from "../enums/VehicleTypeEnum";
+import VehicleFormProps from "../interfaces/VehicleFormProps";
+import {toast} from "react-toastify";
+import Vehicle from "../interfaces/Vehicle";
+import Constants from "../interfaces/Constants";
 
 const StringIsNotNumber = (value: string) => isNaN(Number(value));
 
-function VehicleForm() {
+const VehicleForm: FC<VehicleFormProps> = (vehicleFormProps) => {
 
     const [loading, setLoading] = useState(false);
 
@@ -26,8 +30,36 @@ function VehicleForm() {
             vehicleType: ''
         },
         validationSchema: RegisterSchema,
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             setLoading(true);
+
+            const body: Vehicle = {
+                id: values.id,
+                vehicleType: values.vehicleType
+            };
+
+            const options = {
+                method: 'POST',
+                headers: Constants.HEADERS,
+                body: JSON.stringify(body)
+            };
+
+            try {
+                const response = await fetch(`${Constants.API_URL}/vehicle/park`, options);
+
+                if (response.status === 200) {
+                    vehicleFormProps.onAdd();
+                } else if (response.status === 400) {
+                    const msg = await response.text();
+                    toast.error(msg);
+                } else {
+                    toast.error('Something went wrong when request park vehicle');
+                }
+
+            } catch (e) {
+                toast.error('Something went wrong when request park vehicle');
+            }
+
             setLoading(false);
         }
     });
@@ -38,9 +70,9 @@ function VehicleForm() {
         <>
             <FormikProvider value={formik}>
                 <Form autoComplete='off' noValidate>
-                    <Card sx={{minWidth: 275, justifyContent: 'start', alignItems: 'start'}}>
+                    <Card sx={{minWidth: 275}}>
                         <CardHeader title={'Park vehicle'}
-                                    sx={{borderBottom: '1px solid', marginLeft: '20px', marginRight: '20px'}}/>
+                                    sx={{marginLeft: '20px', marginRight: '20px'}}/>
                         <CardContent>
                             <Grid container spacing={2} sx={{marginBottom: '30px'}}>
                                 <Grid item xs={5}>
@@ -71,7 +103,7 @@ function VehicleForm() {
                                 </Grid>
                                 <Grid item xs={1}>
                                     <Button
-                                        sx={{marginTop:'6px', borderRadius: '40%'}}
+                                        sx={{marginTop:'6px'}}
                                         fullWidth
                                         disabled={loading}
                                         size='large'

@@ -67,8 +67,10 @@ public class ParkingLot {
         if (parkingSlot.getSpotType() == VehicleType.CAR && parkingSlot.getVehicle().getVehicleType() == VehicleType.VAN) {
             ParkingSlot parkingSlotPrev = slots.get(parkingSlot.getNumber() - 2);
             parkingSlotPrev.setVehicle(parkingSlot.getVehicle());
+            parkingSlotPrev.setParkingDate(parkingSlot.getParkingDate());
             ParkingSlot parkingSlotNext = slots.get(parkingSlot.getNumber());
             parkingSlotNext.setVehicle(parkingSlot.getVehicle());
+            parkingSlotNext.setParkingDate(parkingSlot.getParkingDate());
             slots.set(parkingSlotPrev.getNumber() - 1, parkingSlotPrev);
             slots.set(parkingSlotNext.getNumber() - 1, parkingSlotNext);
         }
@@ -101,40 +103,57 @@ public class ParkingLot {
                 .collect(Collectors.toList());
     }
 
-    public Long countingSpots(VehicleType vehicleType, boolean parked) {
+    public Long countRemainingSpots(VehicleType vehicleType) {
 
         long count = 0;
 
         if (vehicleType == VehicleType.MOTORCYCLE) {
             for (int i = 0; i < motorcycleSpots; i++) {
-                count += countingSpots(i, parked);
+                ParkingSlot parkingSlot = slots.get(i);
+                if (parkingSlot.getVehicle() == null) {
+                    count++;
+                }
             }
         } else if (vehicleType == VehicleType.CAR) {
             for (int i = motorcycleSpots; i < (motorcycleSpots + carSpots); i++) {
-                count += countingSpots(i, parked);
+                ParkingSlot parkingSlot = slots.get(i);
+                if (parkingSlot.getVehicle() == null) {
+                    count++;
+                }
             }
         } else if (vehicleType == VehicleType.VAN) {
             for (int i = (motorcycleSpots + carSpots); i < slots.size(); i++) {
-                count += countingSpots(i, parked);
+                ParkingSlot parkingSlot = slots.get(i);
+                if (parkingSlot.getVehicle() == null) {
+                    count++;
+                }
             }
         }
 
         return count;
     }
 
-    public Long countingSpots(int index, boolean parked) {
-        ParkingSlot parkingSlot = slots.get(index);
-        if (parked) {
-            if (parkingSlot.getVehicle() != null) {
-                return 1L;
+    public Long countVanParkedSpots(VehicleType vehicleType) {
+
+        long count = 0;
+
+        if (vehicleType == VehicleType.CAR) {
+            for (int i = motorcycleSpots; i < (motorcycleSpots + carSpots); i++) {
+                ParkingSlot parkingSlot = slots.get(i);
+                if (parkingSlot.getVehicle() != null && parkingSlot.getVehicle().getVehicleType() == VehicleType.VAN) {
+                    count++;
+                }
             }
-        } else {
-            if (parkingSlot.getVehicle() == null) {
-                return 1L;
+        } else if (vehicleType == VehicleType.VAN) {
+            for (int i = (motorcycleSpots + carSpots); i < slots.size(); i++) {
+                ParkingSlot parkingSlot = slots.get(i);
+                if (parkingSlot.getVehicle() != null && parkingSlot.getVehicle().getVehicleType() == VehicleType.VAN) {
+                    count++;
+                }
             }
         }
 
-        return 0L;
+        return count;
     }
 
     public boolean isParkedLotFull() {
