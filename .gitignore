@@ -34,6 +34,7 @@ parking-lot-ui/build
 
 # misc
 parking-lot-ui/.DS_Store
+parking-lot-ui/.env
 parking-lot-ui/.env.local
 parking-lot-ui/.env.development.local
 parking-lot-ui/.env.test.local
