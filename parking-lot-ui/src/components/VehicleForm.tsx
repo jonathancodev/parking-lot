@@ -18,7 +18,7 @@ const VehicleForm: FC<VehicleFormProps> = (vehicleFormProps) => {
         id: Yup.number()
             .integer()
             .positive()
-            .required(),
+            .required('ID is a required field'),
 
         vehicleType: Yup.string()
             .required('Vehicle Type is a required field')
