@@ -110,7 +110,7 @@ function Dashboard() {
                         <ParkingLotCard title={"Spots Remaining"} parkingLot={spotsRemaining}/>
                     </Grid>
                     <Grid item xs={3}>
-                        <ParkingLotCard title={"Vans parked"} parkingLot={vanParkedSpots}/>
+                        <ParkingLotCard title={"Vans Parked"} parkingLot={vanParkedSpots}/>
                     </Grid>
                     <Grid item xs={3}/>
                 </Grid>

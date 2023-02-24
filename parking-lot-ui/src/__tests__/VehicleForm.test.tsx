@@ -18,29 +18,22 @@ describe('VehicleForm', () => {
 
     it('Add vehicle', async () => {
 
-        const { getByLabelText, getByText, findByLabelText, findByRole, findAllByRole } = render(
+        const { getByLabelText, findByLabelText, findByRole } = render(
             <VehicleForm onAdd={() => {}}/>
         );
 
-        act(() => {
-            fireEvent.change(getByLabelText('ID'), { target: { value: '1' } });
-        });
+        const idEl = await getByLabelText('ID');
+        fireEvent.change(idEl, { target: { value: '1' } });
 
         const selectLabel = /Vehicle Type/i;
         const selectEl = await findByLabelText(selectLabel);
-
         expect(selectEl).toBeInTheDocument();
-
-        act(() => {
-            userEvent.click(selectEl);
-        });
+        userEvent.click(selectEl);
 
         const optionsPopupEl = await findByRole("listbox", {
             name: selectLabel
         });
 
-        act(() => {
-            userEvent.click(within(optionsPopupEl).getByText(/car/i));
-        });
+        userEvent.click(within(optionsPopupEl).getByText(/car/i));
     });
 });
