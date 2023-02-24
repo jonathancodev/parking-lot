@@ -31,6 +31,7 @@ parking-lot-ui/coverage
 
 # production
 parking-lot-ui/build
+parking-lot-ui/dist
 
 # misc
 parking-lot-ui/.DS_Store
